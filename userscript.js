@@ -30,25 +30,25 @@ Requirements:
 4. The return format must be identical to the original JSON format, with all translated content contained within the JSON structure
 Please translate the following content:`
 
-    // 生成缓存键的哈希函数（使用字符串前缀避免与其它GM值冲突）
+    // Hash Function to reduce GM key size
     function generateContentHash(content) {
-        // 使用简单的哈希算法生成唯一标识
+        // simple hash algorithm
         let hash = 0;
         for (let i = 0; i < content.length; i++) {
             const char = content.charCodeAt(i);
             hash = (hash << 5) - hash + char;
-            hash |= 0; // 转换为32位整数
+            hash |= 0;
         }
         return 'translation-hash-' + hash.toString(36);
     }
 
-    // 带持久化缓存的翻译函数
+    // function that translates the markdown content, with the ability to cache/fetch previous translations
     function translate(content) {
         return new Promise((resolve, reject) => {
-            // 生成内容哈希作为缓存键
+            // hash the content as GM storage key
             const cacheKey = generateContentHash(content);
 
-            // 从GM缓存获取已存储的翻译
+            // try to fetch existing translation
             const cachedTranslation = GM_getValue(cacheKey);
             if (cachedTranslation) {
                 console.log('Using cached translation from GM storage:', cacheKey);
@@ -56,7 +56,7 @@ Please translate the following content:`
                 return;
             }
 
-            // 如果不存在缓存，则请求API
+            // request the LLM api to translate when cache is not available
             GM_xmlhttpRequest({
                 method: "POST",
                 url: config.llmUrl,
@@ -80,7 +80,7 @@ Please translate the following content:`
                         if (respData.choices && respData.choices.length > 0) {
                             const translated = respData.choices[0].message.content;
 
-                            // 将结果存入GM持久化存储
+                            // store the translated stuff into the GM storage
                             GM_setValue(cacheKey, translated);
                             console.log('Saved translation to GM storage:', cacheKey);
 
@@ -98,14 +98,14 @@ Please translate the following content:`
             });
         });
     }
-    // 专门翻译Question对象的函数
+    // an extra translation function to translate the question object which is peculiar to MCQ questions
     function translateQuestion(questionObj) {
         return new Promise((resolve, reject) => {
-            // 创建缓存键（使用整个问题的JSON字符串作为基础）
+            // hash the whole stringified question object as GM store key
             const contentString = JSON.stringify(questionObj);
             const cacheKey = generateContentHash('question-' + contentString);
 
-            // 检查缓存
+            // check existing translation in the GM store
             const cachedTranslation = GM_getValue(cacheKey);
             if (cachedTranslation) {
                 console.log('Using cached question translation');
@@ -117,7 +117,7 @@ Please translate the following content:`
                 }
             }
 
-            // 发送请求
+            // use LLM to translate the question object (it is required to return json format)
             GM_xmlhttpRequest({
                 method: "POST",
                 url: config.llmUrl,
@@ -142,13 +142,15 @@ Please translate the following content:`
                             const translatedContent = respData.choices[0].message.content;
 
                             try {
-                                // 尝试解析返回的JSON内容
+                                // try to parse json into object
                                 const translatedObj = JSON.parse(translatedContent);
 
-                                // 将结果存入缓存
+                                // store the translated object
                                 GM_setValue(cacheKey, translatedContent);
                                 console.log('Saved question translation to cache');
-                                // 将中文选项存入缓存(暴力写法，可能非选择题导致未知bug）
+                                // this line fixes a previous bug that
+                                // when answering MCQ the webpage sends translated content as the answer.
+                                // it resolves the bug using a brute force way to map the translated content to English content
                                 for (let i = 0; i < translatedObj.Answers.length; i++) {
                                     const translatedAnswer = translatedObj.Answers[i];
                                     const originalAnswer = questionObj.Answers[i];
@@ -158,7 +160,7 @@ Please translate the following content:`
                                 resolve(translatedObj);
                             } catch(e) {
                                 console.error('Failed to parse translated question', e);
-                                resolve(questionObj); // 解析失败时返回原始内容
+                                resolve(questionObj); // when parsing fails, fall back
                             }
                         } else {
                             reject(new Error("No translation content found in response"));
@@ -173,31 +175,33 @@ Please translate the following content:`
             });
         });
     }
-    // 获取安全引用
+    
     const safeWindow = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
-    // 使用unsafeWindow安全劫持fetch
+    // hijack the browser window fetch api
     const oldFetch = safeWindow.fetch;
     function hookFetch() {
-        // 在发送请求前检查是否是提交答案的请求
+        // check if it is a POST request
+        // if it contains "submit" in the end of url
+        // I assume it is for submission
+        // and I will replace the answer (not only for mcq)
         const requestUrl = arguments[0];
         const requestOptions = arguments[1] || {};
 
-        // 检查是否是提交答案的POST请求
         if (typeof requestUrl === 'string' &&
             requestUrl.endsWith('/submit') &&
             requestOptions.method === 'POST' &&
             requestOptions.body) {
 
             try {
-                // 解析请求体
+                // parse request body
                 const bodyObj = JSON.parse(requestOptions.body);
                 if (bodyObj.input) {
-                    // 尝试获取原始答案
+                    // check gm store for English answer
                     const originalAnswer = GM_getValue(bodyObj.input);
                     if (originalAnswer) {
                         console.log(`Converting answer from "${bodyObj.input}" to "${originalAnswer}"`);
                         bodyObj.input = originalAnswer;
-                        // 更新请求体
+                        // replacee the request body, swapping the translated answer into English one
                         arguments[1] = {
                             ...requestOptions,
                             body: JSON.stringify(bodyObj)
@@ -213,21 +217,22 @@ Please translate the following content:`
             oldFetch.apply(this, arguments).then((response) => {
                 const oldJson = response.json;
 
-                // 劫持response.json方法
-                // 在hookFetch函数中
+                // In most cases, response.json method is hijacked to replace English content into translations
                 response.json = function () {
                     return new Promise((resolveJson, rejectJson) => {
                         oldJson.apply(this, arguments).then(async (result) => {
                             try {
-                                // 检查并翻译Readme内容
+                                // In this try block,
+                                // check if the response body contains lesson info like readme and question
+                                // replace correspondingly
                                 if (result && result.Lesson) {
                                     const foundKeys = [];
 
-                                    // 首先遍历所有可能包含Readme的对象
+                                    // add stuff to translate in an array
                                     for (const key in result.Lesson) {
                                         const lessonObj = result.Lesson[key];
-
-                                        // 检查子对象是否有Readme属性且是字符串
+                                        
+                                        // check Readme markdown content
                                         if (lessonObj && lessonObj.Readme && typeof lessonObj.Readme === 'string') {
                                             foundKeys.push({
                                                 key: key,
@@ -237,7 +242,7 @@ Please translate the following content:`
                                             });
                                         }
 
-                                        // 检查是否有Question对象
+                                        // check MCQ question
                                         if (lessonObj && lessonObj.Question) {
                                             foundKeys.push({
                                                 key: key,
@@ -248,16 +253,16 @@ Please translate the following content:`
                                         }
                                     }
 
-                                    // 如果没有需要翻译的内容
+                                    // early return when no stuff to translate
                                     if (foundKeys.length === 0) {
                                         resolveJson(result);
                                         return;
                                     }
 
-                                    // 创建计数器，跟踪完成翻译的数量
+                                    // use a count variable to track translation progress
                                     let translationCount = 0;
 
-                                    // 处理每个需要翻译的内容
+                                    // translate one by one
                                     for (const item of foundKeys) {
                                         try {
                                             if (item.type === 'readme') {
@@ -274,14 +279,14 @@ Please translate the following content:`
                                         } finally {
                                             translationCount++;
 
-                                            // 当所有翻译完成时解析Promise
+                                            // resolve the Promise when all translations done
                                             if (translationCount === foundKeys.length) {
                                                 resolveJson(result);
                                             }
                                         }
                                     }
                                 } else {
-                                    // 没有需要翻译的内容
+                                    // resolve early when the response pattern doesn't match static lesson data
                                     resolveJson(result);
                                 }
                             } catch (error) {
@@ -295,11 +300,11 @@ Please translate the following content:`
                 };
 
                 resolve(response);
-            }).catch(reject); // 处理fetch错误
+            }).catch(reject); // handle fetch error
         });
     }
 
-    // 安全应用fetch劫持
+    //apply the hijack
     safeWindow.fetch = hookFetch;
 
 })();
