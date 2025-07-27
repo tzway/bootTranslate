@@ -16,7 +16,7 @@ Install the Tampermonkey browser extension first. Create a new userscript, copy 
 https://github.com/user-attachments/assets/c09a4fb5-23ec-4d72-8a3e-39f0e7da06a8
 
 ## How to try the script without an LLM api?
-![Full Instruction](./pre_translated_python_chapter_1/README.md)
+[Full Instruction](./pre_translated_python_chapter_1/README.md)
 
 https://github.com/user-attachments/assets/3af5d9fc-db21-4f87-880c-6c4ead277a7f
 
@@ -32,3 +32,14 @@ const config = {
     llmKey: "your-api-key-here"
 }
 ```
+
+## Q & A
+
+**Q: Does the script translate the full page?**
+ A: No. The script only translates two elements: the main lesson content and the multiple-choice questions and their options.
+
+**Q: How can I speed up the loading screen when waiting for the translation? (Non-functional bug)**
+ A: Boot.dev’s frontend preloads lesson content when you hover your mouse over a lesson link. To take advantage of this, open the dropdown menu for the current chapter and hover your mouse over the remaining lessons. This triggers the frontend to preload them, and the translation script will run quietly in the background.
+
+**Q: I don't have an LLM API. How can I try the script?**
+ A: You can try the script using [this pre-translated chapter](./pre_translated_python_chapter_1/README.md).
