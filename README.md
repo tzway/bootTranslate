@@ -1,10 +1,10 @@
 ## bootTranslate
 
-**Tired of clunky browser translations ruining your learning?**  
+**💥 Tired of clunky browser translations ruining your learning?**  
 
-**Struggling with inaccurate translations or constantly switching to a dictionary?**  
+**😣 Struggling with inaccurate translations or constantly switching to a dictionary?**  
 
-**Wish you could share Boot.dev’s amazing courses with non-English friends?**  
+**🌍 Wish you could share Boot.dev’s amazing courses with non-English friends?**  
 
 ### **bootTranslate solves it all!**
 

@@ -1,6 +1,6 @@
 ## What are those files?
 
-These are the local storage from Tampermonkey, which contains translations of Boot.dev `Learn to Code in Python` Chapter 1 lessons.
+These are the local storage from Tampermonkey, which contains translations of Boot.dev [Learn to Code in Python](https://www.boot.dev/courses/learn-code-python) Chapter 1 lessons.
 
 ## How to use those?
 
