@@ -14,6 +14,10 @@
 
 (function() {
     'use strict';
+    // write something to initialize the storage so the storage is visible in settings
+    if (GM_getValue("") === undefined) {
+        GM_setValue("", "");
+    }
     console.log("bootslate started");
     const config = {
         targetLanguage: "Chinese",
