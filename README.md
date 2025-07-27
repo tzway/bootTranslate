@@ -14,6 +14,7 @@ https://github.com/user-attachments/assets/a8a53469-2cb1-4420-938f-d5f9f96585d2
 
 
 ## How to try the script without an LLM api?
+![Full Instruction](./pre_translated_python_chapter_1/README.md)
 
 https://github.com/user-attachments/assets/3af5d9fc-db21-4f87-880c-6c4ead277a7f
 
