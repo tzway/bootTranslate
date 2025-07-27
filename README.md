@@ -36,10 +36,13 @@ const config = {
 ## Q & A
 
 **Q: Does the script translate the full page?**
+
  A: No. The script only translates two elements: the main lesson content and the multiple-choice questions and their options.
 
 **Q: How can I speed up the loading screen when waiting for the translation? (Non-functional bug)**
+
  A: Boot.dev’s frontend preloads lesson content when you hover your mouse over a lesson link. To take advantage of this, open the dropdown menu for the current chapter and hover your mouse over the remaining lessons. This triggers the frontend to preload them, and the translation script will run quietly in the background.
 
 **Q: I don't have an LLM API. How can I try the script?**
+
  A: You can try the script using [this pre-translated chapter](./pre_translated_python_chapter_1/README.md).
