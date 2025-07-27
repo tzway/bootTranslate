@@ -1,5 +1,23 @@
 ## bootTranslate
-This userscript translates course content on Boot.dev by intercepting API requests and replacing the responses with translated versions. It also features persistent cache of translated content, in order to save your api tokens and reduce response time. Enjoy Boot.dev in your preferred language!
+
+**Tired of clunky browser translations ruining your learning?**  
+
+**Struggling with inaccurate translations or constantly switching to a dictionary?**  
+
+**Wish you could share Boot.dev’s amazing courses with non-English friends?**  
+
+### **bootTranslate solves it all!**
+
+bootTranslate translates course content on Boot.dev:
+
+- **Context aware translation** from large language models 
+- Featuring **persistent cache** of translations  
+  → *Saves your API tokens*  
+  → *Reduces response time*  
+
+**Enjoy Boot.dev in your preferred language!**  
+
+**👉 Install `bootTranslate` now — unlock a seamless, borderless coding journey!**
 
 ## Demo
 
@@ -36,10 +54,13 @@ const config = {
 ## Q & A
 
 **Q: Does the script translate the full page?**
+
  A: No. The script only translates two elements: the main lesson content and the multiple-choice questions and their options.
 
 **Q: How can I speed up the loading screen when waiting for the translation? (Non-functional bug)**
+
  A: Boot.dev’s frontend preloads lesson content when you hover your mouse over a lesson link. To take advantage of this, open the dropdown menu for the current chapter and hover your mouse over the remaining lessons. This triggers the frontend to preload them, and the translation script will run quietly in the background.
 
 **Q: I don't have an LLM API. How can I try the script?**
- A: You can try the script using [this pre-translated chapter](./pre_translated_python_chapter_1/README.md).
+
+ A: You can try the script using [this guide](./pre_translated_python_chapter_1/README.md).
