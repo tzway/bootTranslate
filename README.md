@@ -1,3 +1,5 @@
+## bootTranslate
+
 **Tired of clunky browser translations ruining your learning?**  
 
 **Struggling with inaccurate translations or constantly switching to a dictionary?**  
