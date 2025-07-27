@@ -9,7 +9,15 @@ https://private-user-images.githubusercontent.com/25824673/471160312-a8a53469-2c
 
 ![](./demo_assets/screenshot2.png)
 
-## Set up
+## How to Install?
+
+
+
+## How to try the script without an LLM api?
+
+https://github.com/user-attachments/assets/3af5d9fc-db21-4f87-880c-6c4ead277a7f
+
+## Configuration
 
 Set up the config object prior to usage.
 
