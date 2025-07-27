@@ -11,7 +11,7 @@ Set up the config object prior to usage.
 
 ```javascript
 const config = {
-    targetLanguage: "Chinese",
+    targetLanguage: "YourLanguage",
     llmUrl: "https://your-llm-api-provider/v1/chat/completions",
     llmModel: "model-name",
     llmKey: "your-api-key-here"
