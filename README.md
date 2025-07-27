@@ -11,7 +11,9 @@ https://github.com/user-attachments/assets/a8a53469-2cb1-4420-938f-d5f9f96585d2
 
 ## How to Install?
 
+Install the Tampermonkey browser extension first. Create a new userscript, copy the script content, paste it and save. Edit the config before use.
 
+https://github.com/user-attachments/assets/c09a4fb5-23ec-4d72-8a3e-39f0e7da06a8
 
 ## How to try the script without an LLM api?
 ![Full Instruction](./pre_translated_python_chapter_1/README.md)
