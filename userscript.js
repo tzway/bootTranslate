@@ -185,14 +185,13 @@ Please translate the following content:`
     const oldFetch = safeWindow.fetch;
     function hookFetch() {
         // check if it is a POST request
-        // if it contains "submit" in the end of url
         // I assume it is for submission
         // and I will replace the answer (not only for mcq)
         const requestUrl = arguments[0];
         const requestOptions = arguments[1] || {};
 
         if (typeof requestUrl === 'string' &&
-            requestUrl.endsWith('/submit') &&
+            // requestUrl.endsWith('/submit') &&
             requestOptions.method === 'POST' &&
             requestOptions.body) {
 
